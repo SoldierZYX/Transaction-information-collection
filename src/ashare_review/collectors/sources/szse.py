@@ -1,0 +1,3 @@
+"""深圳证券交易所来源适配器。"""
+
+SOURCE_IDS = ("SRC-CALENDAR-001", "SRC-SECURITY-002", "SRC-DISCLOSURE-002")
