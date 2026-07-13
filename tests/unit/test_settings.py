@@ -1,0 +1,23 @@
+"""Tests for the configuration model."""
+
+from pydantic import ValidationError
+
+from ashare_review.config.settings import Settings
+
+
+def test_settings_use_mvp_defaults() -> None:
+    settings = Settings(_env_file=None)
+
+    assert settings.business_timezone == "Asia/Shanghai"
+    assert settings.storage_timezone == "UTC"
+    assert settings.ai_enabled is False
+    assert settings.email_enabled is False
+
+
+def test_settings_reject_unknown_timezone() -> None:
+    try:
+        Settings(_env_file=None, business_timezone="Not/A_Timezone")
+    except ValidationError as error:
+        assert "Unknown IANA timezone" in str(error)
+    else:
+        raise AssertionError("Expected invalid timezone to be rejected")
