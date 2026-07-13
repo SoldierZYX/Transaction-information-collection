@@ -1,0 +1,44 @@
+# Python bytecode and tooling caches
+__pycache__/
+*.py[cod]
+*.so
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pytype/
+.coverage
+.coverage.*
+htmlcov/
+
+# Virtual environments and build artifacts
+.venv/
+venv/
+env/
+build/
+dist/
+*.egg-info/
+
+# Secrets: keep the shareable template only
+.env
+.env.*
+!.env.example
+
+# Local runtime artifacts
+data/*
+!data/.gitkeep
+reports/*
+!reports/.gitkeep
+logs/
+*.db
+*.sqlite
+*.sqlite3
+
+# Notebooks and local IDE settings
+.ipynb_checkpoints/
+.idea/
+.vscode/
+
+# Operating system files
+Thumbs.db
+Desktop.ini
+.DS_Store
