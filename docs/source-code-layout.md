@@ -13,7 +13,8 @@ src/ashare_review/collectors/
     ├── sse.py          # 上海证券交易所
     ├── szse.py         # 深圳证券交易所
     ├── cninfo.py       # 巨潮资讯
-    └── csrc.py         # 中国证监会
+    ├── csrc.py         # 中国证监会
+    └── kr36.py         # 36Kr
 ```
 
 ## 强制规则
@@ -27,4 +28,6 @@ src/ashare_review/collectors/
 
 ## 当前状态
 
-`sse.py`、`szse.py`、`cninfo.py` 和 `csrc.py` 目前只声明各自负责的来源 ID，尚未实现真实网络访问。后续实现必须遵守本文件的分文件规则和数据源有条件批准范围。
+`kr36.py` 已实现 36Kr 官方 RSS 快讯的标题、时间和链接采集。由于 Python 模块名不能以数字开头，36Kr 使用 `kr36.py` 作为稳定英文简称。
+
+`cninfo.py` 已实现面向巨潮资讯官方授权数据服务的公告元数据适配层。其余网站文件目前只声明各自负责的来源 ID，尚未实现真实网络访问。后续实现必须遵守本文件的分文件规则和数据源有条件批准范围。
