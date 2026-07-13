@@ -14,6 +14,7 @@
 | SRC-DISCLOSURE-001 | https://www.cninfo.com.cn/ | 公告元数据、标题、发布日期与链接 | 元数据、短摘要和链接；不保存全文 |
 | SRC-DISCLOSURE-002 | https://www.sse.com.cn/；https://www.szse.cn/disclosure/notice/company/ | 交易所公告元数据、标题、发布日期与链接 | 元数据、短摘要和链接；不保存全文 |
 | SRC-POLICY-001 | https://www.csrc.gov.cn/ | 政策监管元数据、标题、发布日期与链接 | 元数据、短摘要和链接；不保存全文 |
+| SRC-MANUAL-CSV-001 | 用户从获准服务导出的本地 CSV | 日线行情、证券基础信息、公告元数据 | 结构化字段、来源标识和导入健康记录 |
 
 ## 必须遵守的条件
 
@@ -26,4 +27,4 @@
 ## 未批准范围
 
 - `SRC-MARKET-001` 日线行情、`SRC-NEWS-001` 财经新闻、`SRC-OVERSEAS-001` 海外市场、`SRC-AI-001` AI 仍为待调查状态。
-- 日线行情未获准前，后续工作流只能使用 mock 行情数据，不能输出正式观察标的。
+- `SRC-MANUAL-CSV-001` 只允许导入用户已获授权导出的文件，不等同于批准任意网站的自动化访问。
