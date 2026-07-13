@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Literal
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from pydantic import SecretStr, field_validator
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///data/ashare_review.sqlite3"
     data_dir: Path = Path("data")
     reports_dir: Path = Path("reports")
+    collection_timeout_seconds: float = Field(default=10.0, gt=0)
+    collection_minimum_interval_seconds: float = Field(default=1.0, ge=0)
+    collection_max_attempts: int = Field(default=3, ge=1)
     ai_enabled: bool = False
     email_enabled: bool = False
     openai_api_key: SecretStr | None = None

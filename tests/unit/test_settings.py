@@ -10,6 +10,8 @@ def test_settings_use_mvp_defaults() -> None:
 
     assert settings.business_timezone == "Asia/Shanghai"
     assert settings.storage_timezone == "UTC"
+    assert settings.collection_timeout_seconds == 10.0
+    assert settings.collection_max_attempts == 3
     assert settings.ai_enabled is False
     assert settings.email_enabled is False
 
