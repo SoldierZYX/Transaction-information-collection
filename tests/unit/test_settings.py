@@ -6,7 +6,7 @@ from ashare_review.config.settings import Settings
 
 
 def test_settings_use_mvp_defaults() -> None:
-    settings = Settings.model_validate({})
+    settings = Settings(_env_file=None)  # type: ignore[call-arg]
 
     assert settings.business_timezone == "Asia/Shanghai"
     assert settings.storage_timezone == "UTC"

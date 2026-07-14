@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import smtplib
+import ssl
 from email.message import EmailMessage
 from pathlib import Path
 from typing import Protocol
@@ -18,16 +19,21 @@ class SmtpTransport(Protocol):
 class SmtpEmailTransport:
     """基于标准库 SMTP STARTTLS 的邮件传输实现。"""
 
-    def __init__(self, host: str, port: int, username: str, password: str) -> None:
+    def __init__(
+        self, host: str, port: int, username: str, password: str, *, use_ssl: bool = False
+    ) -> None:
         self._host = host
         self._port = port
         self._username = username
         self._password = password
+        self._use_ssl = use_ssl
 
     def send(self, message: EmailMessage) -> None:
         """经加密连接认证后发送邮件。"""
-        with smtplib.SMTP(self._host, self._port, timeout=20) as client:
-            client.starttls()
+        client_type = smtplib.SMTP_SSL if self._use_ssl else smtplib.SMTP
+        with client_type(self._host, self._port, timeout=20) as client:
+            if not self._use_ssl:
+                client.starttls(context=ssl.create_default_context())
             client.login(self._username, self._password)
             client.send_message(message)
 

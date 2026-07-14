@@ -49,4 +49,4 @@ py -m pytest
 & "C:/Users/pc/AppData/Local/Programs/Python/Python312/python.exe" -m ashare_review.cli.collect_36kr
 ```
 
-需要邮件发送时，在未纳入版本控制的 `.env` 中设置 `ASHARE_EMAIL_ENABLED=true`，并填写 SMTP 主机、端口、用户名、授权码与 `ASHARE_SMTP_RECIPIENTS`。多个收件邮箱用英文逗号分隔。
+需要邮件发送时，在未纳入版本控制的 `.env` 中设置 `ASHARE_EMAIL_ENABLED=true`，并填写 SMTP 主机、端口、加密方式、用户名、授权码与 `ASHARE_SMTP_RECIPIENTS`。多个收件邮箱用英文逗号分隔。使用隐式 SSL（例如端口 465）时，设置 `ASHARE_SMTP_USE_SSL=true`。

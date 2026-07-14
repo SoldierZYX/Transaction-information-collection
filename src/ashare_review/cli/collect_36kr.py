@@ -78,7 +78,10 @@ def main() -> int:
         )
         return 1
 
-    delivery_status = _send_email_if_enabled(settings, result.report.path, now)
+    try:
+        delivery_status = _send_email_if_enabled(settings, result.report.path, now)
+    except Exception as error:
+        delivery_status = f"failed:{type(error).__name__}"
     print(
         json.dumps(
             {
@@ -120,6 +123,7 @@ def _send_email_if_enabled(settings: Settings, report_path: Path, generated_at: 
             settings.smtp_port,
             settings.smtp_username,
             settings.smtp_password.get_secret_value(),
+            use_ssl=settings.smtp_use_ssl,
         ),
         settings.smtp_username,
         recipients,

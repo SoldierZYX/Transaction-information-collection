@@ -36,6 +36,7 @@ class Settings(BaseSettings):
     openai_api_key: SecretStr | None = None
     smtp_host: str | None = None
     smtp_port: int = 587
+    smtp_use_ssl: bool = False
     smtp_username: str | None = None
     smtp_password: SecretStr | None = None
     smtp_recipients: str | None = None
