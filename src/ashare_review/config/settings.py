@@ -38,6 +38,7 @@ class Settings(BaseSettings):
     smtp_port: int = 587
     smtp_username: str | None = None
     smtp_password: SecretStr | None = None
+    smtp_recipients: str | None = None
 
     @field_validator("business_timezone", "storage_timezone")
     @classmethod

@@ -12,6 +12,8 @@
 
 当前完成 `TASK-005` 的首个数据接入路径：从已获授权的本地 CSV 导入日线行情、证券基础信息和公告元数据。该路径不访问外部网站，重复导入不会重复写入。
 
+当前完成 36Kr 官方 RSS 快讯的执行入口：可将最近窗口内的快讯元数据落入 SQLite，并生成 Markdown 简报；配置 SMTP 后可自动将简报作为邮件附件发送。
+
 ## 文档入口
 
 - [架构决策](docs/adr/0001-mvp-architecture.md)
@@ -38,3 +40,13 @@ py -m pytest
 ```
 
 将真实凭据仅写入未纳入版本控制的 `.env` 文件；可从 `.env.example` 开始填写。默认关闭 AI 与邮件功能，且自动化测试不得使用真实网络或真实密钥。
+
+## 运行 36Kr 快讯采集
+
+在项目根目录执行以下命令，默认采集最近 24 小时的官方 RSS 快讯，并将简报写入 `reports/`：
+
+```powershell
+& "C:/Users/pc/AppData/Local/Programs/Python/Python312/python.exe" -m ashare_review.cli.collect_36kr
+```
+
+需要邮件发送时，在未纳入版本控制的 `.env` 中设置 `ASHARE_EMAIL_ENABLED=true`，并填写 SMTP 主机、端口、用户名、授权码与 `ASHARE_SMTP_RECIPIENTS`。多个收件邮箱用英文逗号分隔。

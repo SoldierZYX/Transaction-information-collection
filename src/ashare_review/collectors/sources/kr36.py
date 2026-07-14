@@ -70,8 +70,11 @@ class Kr36RssCollector:
 
     @staticmethod
     def _published_at(item: ElementTree.Element) -> datetime | None:
-        """解析 RSS 标准发布时间。"""
+        """解析 36Kr 的发布时间，并兼容标准 RSS 日期。"""
         raw_value = (item.findtext("pubDate") or "").strip()
         if not raw_value:
             return None
-        return parsedate_to_datetime(raw_value)
+        try:
+            return datetime.strptime(raw_value, "%Y-%m-%d %H:%M:%S %z")
+        except ValueError:
+            return parsedate_to_datetime(raw_value)

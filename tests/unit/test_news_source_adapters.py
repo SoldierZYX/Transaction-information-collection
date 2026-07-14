@@ -77,6 +77,26 @@ def test_36kr_rss_collector_rejects_unsuccessful_response() -> None:
         collector.fetch(window)
 
 
+def test_36kr_rss_collector_parses_official_datetime_format() -> None:
+    """36Kr RSS 的日期格式包含本地时间和数字时区。"""
+    xml = """<?xml version='1.0'?><rss><channel><item>
+    <title>测试快讯</title><link>https://36kr.com/p/1</link><guid>news-1</guid>
+    <pubDate>2026-07-14 09:00:00 +0800</pubDate>
+    </item></channel></rss>""".encode()
+    collector = Kr36RssCollector(
+        StubHttpClient(HttpResponse(status_code=200, body=xml, headers={})),
+        captured_at=datetime(2026, 7, 14, 2, tzinfo=UTC),
+    )
+    window = CollectionWindow(
+        starts_at=datetime(2026, 7, 14, 0, tzinfo=UTC),
+        ends_at=datetime(2026, 7, 14, 2, tzinfo=UTC),
+    )
+
+    records = collector.fetch(window)
+
+    assert records[0].published_at == datetime(2026, 7, 14, 1, tzinfo=UTC)
+
+
 def test_cninfo_collector_converts_authorized_service_metadata() -> None:
     """巨潮适配器仅转换授权服务提供的公告元数据。"""
     published_at = datetime(2026, 7, 14, 2, tzinfo=UTC)
