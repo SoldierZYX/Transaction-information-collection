@@ -16,6 +16,8 @@
 
 当前完成新闻事件处理基础：标题会按上海业务日进行确定性标准化和精确去重，并为每个中性新闻事件保留全部原始证据关联。
 
+当前完成股票池规则基础：仅用本地导入的证券和日线数据执行板块、状态、历史完整性与流动性过滤，并保存确定性评分输入。
+
 ## 文档入口
 
 - [架构决策](docs/adr/0001-mvp-architecture.md)
@@ -26,6 +28,7 @@
 - [默认配置清单](docs/default-configuration.md)
 - [风险登记册](docs/risk-register.md)
 - [新闻事件处理规则](docs/event-processing.md)
+- [股票池规则](docs/pool-rules.md)
 
 ## 下一步
 
@@ -53,3 +56,11 @@ py -m pytest
 ```
 
 需要邮件发送时，在未纳入版本控制的 `.env` 中设置 `ASHARE_EMAIL_ENABLED=true`，并填写 SMTP 主机、端口、加密方式、用户名、授权码与 `ASHARE_SMTP_RECIPIENTS`。多个收件邮箱用英文逗号分隔。使用隐式 SSL（例如端口 465）时，设置 `ASHARE_SMTP_USE_SSL=true`。
+
+## 生成股票池
+
+先按 [本地 CSV 导入格式](docs/manual-csv-import.md) 导入至少 21 个交易日的证券和日线数据，再执行：
+
+```powershell
+& "C:/Users/pc/AppData/Local/Programs/Python/Python312/python.exe" -m ashare_review.cli.generate_pool
+```

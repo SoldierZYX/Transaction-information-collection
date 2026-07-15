@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import date
+
 from ashare_review.domain.market import MarketBar, Security
 from ashare_review.repositories.database import Database
 
@@ -42,6 +44,31 @@ class SecurityRepository:
             )
             connection.commit()
         return len(securities)
+
+    def list_active_on(self, target_date: date) -> list[Security]:
+        """读取目标日期有效的证券映射。"""
+        with self._database.connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT symbol, exchange, name, board, active_from, active_to, source_id
+                FROM securities
+                WHERE active_from <= ? AND (active_to IS NULL OR active_to >= ?)
+                ORDER BY symbol, exchange, active_from DESC
+                """,
+                (target_date.isoformat(), target_date.isoformat()),
+            ).fetchall()
+        return [
+            Security(
+                symbol=str(row["symbol"]),
+                exchange=str(row["exchange"]),
+                name=str(row["name"]),
+                board=str(row["board"]),
+                active_from=date.fromisoformat(str(row["active_from"])),
+                active_to=(date.fromisoformat(str(row["active_to"])) if row["active_to"] else None),
+                source_id=str(row["source_id"]),
+            )
+            for row in rows
+        ]
 
 
 class MarketBarRepository:
@@ -84,3 +111,38 @@ class MarketBarRepository:
             )
             connection.commit()
         return len(bars)
+
+    def list_until(self, target_date: date) -> list[MarketBar]:
+        """读取目标日期及此前的全部日线，供确定性指标计算。"""
+        with self._database.connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT trade_date, symbol, open, high, low, close, volume, amount, source_id
+                FROM market_bars
+                WHERE trade_date <= ?
+                ORDER BY symbol, trade_date, source_id
+                """,
+                (target_date.isoformat(),),
+            ).fetchall()
+        return [
+            MarketBar(
+                trade_date=date.fromisoformat(str(row["trade_date"])),
+                symbol=str(row["symbol"]),
+                open=float(row["open"]),
+                high=float(row["high"]),
+                low=float(row["low"]),
+                close=float(row["close"]),
+                volume=float(row["volume"]),
+                amount=float(row["amount"]),
+                source_id=str(row["source_id"]),
+            )
+            for row in rows
+        ]
+
+    def latest_trade_date(self) -> date | None:
+        """返回已导入日线中的最近交易日期。"""
+        with self._database.connect() as connection:
+            row = connection.execute("SELECT MAX(trade_date) AS value FROM market_bars").fetchone()
+        if row is None or row["value"] is None:
+            return None
+        return date.fromisoformat(str(row["value"]))

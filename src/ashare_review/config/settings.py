@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     collection_timeout_seconds: float = Field(default=10.0, gt=0)
     collection_minimum_interval_seconds: float = Field(default=1.0, ge=0)
     collection_max_attempts: int = Field(default=3, ge=1)
+    pool_min_previous_day_amount_cny: float = Field(default=500_000_000, ge=0)
+    pool_max_candidates: int = Field(default=5, ge=1)
+    pool_include_chinext: bool = False
     ai_enabled: bool = False
     email_enabled: bool = False
     openai_api_key: SecretStr | None = None
