@@ -19,12 +19,15 @@ from ashare_review.collectors.runner import CollectorRunner
 from ashare_review.collectors.sources.kr36 import Kr36RssCollector
 from ashare_review.config.settings import Settings, get_settings
 from ashare_review.delivery.email import EmailReportSender, SmtpEmailTransport
+from ashare_review.processors.news_events import NewsEventProcessor
 from ashare_review.reports.news_brief import NewsBriefWriter
 from ashare_review.repositories.database import Database
+from ashare_review.repositories.events import EventRepository
 from ashare_review.repositories.locks import TaskLockRepository
 from ashare_review.repositories.migrations import MigrationRunner
 from ashare_review.repositories.raw_records import RawRecordRepository
 from ashare_review.repositories.source_health import SourceHealthRepository
+from ashare_review.workflows.event_processing import EventProcessingWorkflow
 from ashare_review.workflows.locking import TaskLease
 from ashare_review.workflows.news_collection import NewsCollectionWorkflow
 
@@ -78,6 +81,9 @@ def main() -> int:
         )
         return 1
 
+    event_result = EventProcessingWorkflow(
+        RawRecordRepository(database), EventRepository(database), NewsEventProcessor()
+    ).run_news()
     try:
         delivery_status = _send_email_if_enabled(settings, result.report.path, now)
     except Exception as error:
@@ -87,6 +93,8 @@ def main() -> int:
             {
                 "status": "completed",
                 "records": len(result.records),
+                "events": event_result.events_upserted,
+                "evidence_links": event_result.evidence_links_created,
                 "report_path": str(result.report.path),
                 "email": delivery_status,
             },

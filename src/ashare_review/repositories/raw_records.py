@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import sqlite3
 from datetime import datetime
 
 from ashare_review.domain.records import RawRecord, StoredRawRecord
@@ -51,6 +52,33 @@ class RawRecordRepository:
         if row is None:
             raise RuntimeError("原始记录写入后未能读取")
         return StoredRawRecord(id=int(row["id"]), record=record)
+
+    def list_by_record_type(self, record_type: str) -> list[StoredRawRecord]:
+        """按记录类型读取原始数据，用于可重复执行的后续处理。"""
+        with self._database.connect() as connection:
+            rows = connection.execute(
+                "SELECT * FROM raw_records WHERE record_type = ? ORDER BY id", (record_type,)
+            ).fetchall()
+        return [self._to_stored_record(row) for row in rows]
+
+    @staticmethod
+    def _to_stored_record(row: sqlite3.Row) -> StoredRawRecord:
+        """将 SQLite 行还原为领域记录。"""
+        stored_row = row
+        published_at = stored_row["published_at"]
+        return StoredRawRecord(
+            id=int(stored_row["id"]),
+            record=RawRecord(
+                source_id=str(stored_row["source_id"]),
+                external_id=str(stored_row["external_id"]),
+                record_type=str(stored_row["record_type"]),
+                content_hash=str(stored_row["content_hash"]),
+                payload=json.loads(str(stored_row["payload_json"])),
+                captured_at=datetime.fromisoformat(str(stored_row["captured_at"])),
+                published_at=(datetime.fromisoformat(str(published_at)) if published_at else None),
+                url=str(stored_row["url"]) if stored_row["url"] is not None else None,
+            ),
+        )
 
     @staticmethod
     def _to_storage_time(value: datetime | None) -> str | None:
